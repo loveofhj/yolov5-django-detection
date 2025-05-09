@@ -1,0 +1,3 @@
+# Ignore YOLOv5 weights
+yolov5/yolov5s.pt
+media/results/*.jpg

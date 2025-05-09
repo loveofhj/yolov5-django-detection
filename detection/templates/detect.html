@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YOLOv5 Detection</title>
+</head>
+<body>
+    <h2>Upload Image for Object Detection</h2>
+    <form action="/detection/detect/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" required>
+        <button type="submit">Detect</button>
+    </form>
+
+    {% if detected_image %}
+        <h3>Detection Result:</h3>
+        <img src="{{ detected_image }}" alt="Detected Image" style="width:500px;">
+    {% endif %}
+</body>
+</html>

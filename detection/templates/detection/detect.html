@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Object Detection with Progress Bar</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        #progress-bar {
+            width: 0;
+            height: 25px;
+            background-color: #4caf50;
+            margin-top: 10px;
+            transition: width 0.5s;
+        }
+
+        #progress-container {
+            width: 100%;
+            background-color: #ddd;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        #result-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        #result-image {
+            width: 300px;
+            height: auto;
+            display: none;
+        }
+
+        #loading-text {
+            display: none;
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Upload Image for Object Detection</h2>
+
+<form id="upload-form" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="image" id="image-input" required />
+    <button type="submit">Upload</button>
+</form>
+
+<div id="progress-container">
+    <div id="progress-bar"></div>
+</div>
+<p id="loading-text">Processing Image...</p>
+
+<div id="result-container">
+    <h3>Detection Result:</h3>
+    <img id="result-image" src="" alt="Result Image" />
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#upload-form').on('submit', function(e) {
+            e.preventDefault();
+
+            $('#result-image').hide();
+            $('#loading-text').show();
+            $('#progress-container').show();
+            $('#progress-bar').css('width', '0%');
+
+            var formData = new FormData(this);
+
+            $.ajax({
+                xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    
+                    xhr.upload.addEventListener("progress", function(evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                            $('#progress-bar').css('width', percentComplete + '%');
+                        }
+                    }, false);
+
+                    xhr.addEventListener("load", function() {
+                        $('#loading-text').hide();
+                    });
+
+                    return xhr;
+                },
+                url: "{% url 'detect' %}",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#progress-container').hide();
+                    
+                    if (response.status === 'success') {
+                        $('#result-image').attr('src', response.file_url).show();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    $('#progress-container').hide();
+                    $('#loading-text').hide();
+                    alert("Error: " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
