@@ -11,11 +11,15 @@ cd yolov5-django-app
 2. Create and activate a virtual environment:
 python -m venv yolov5_django_env
 source yolov5_django_env/bin/activate  # Windows: .\yolov5_django_env\Scripts\activate
-# 패키지 설치
+## 패키지 설치
 pip install django
+
 pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
+
 pip install opencv-python-headless
+
 pip install pillow numpy matplotlib requests
+
 
 3. Install dependencies:
 git clone https://github.com/ultralytics/yolov5.git
